@@ -9,7 +9,7 @@ Just run `mvn clean package`
 ## Prerequesites
 
 Initialize a keystore file. **Reagardless what you set on the other fields in key, the alias must be "keytool"**
-`keytool -genkeypair -alias keytool -storetype PKCS12 -keyalg RSA -keysize 2048 -dname "CN=Markus Kremer, OU=voidmain, O=voidmain, L=Langenscheid, ST=Unknown, C=DE" -validity 100 -keystore keystore.jks -storepass 123456`
+`keytool -genseckey -keystore keystore.jks -storetype PKCS12 -storepass 123456 -keyalg AES -keysize 256 -alias keytool -keypass 123456`
 
 ## Usage
 

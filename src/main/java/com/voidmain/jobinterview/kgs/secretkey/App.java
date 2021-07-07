@@ -10,7 +10,6 @@ import com.voidmain.jobinterview.kgs.secretkey.service.IParameterValidatorServic
 import com.voidmain.jobinterview.kgs.secretkey.service.impl.CommandLineParameterValidatorService;
 import com.voidmain.jobinterview.kgs.secretkey.service.impl.KeyStoreCryptoService;
 import org.apache.log4j.Logger;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.crypto.NoSuchPaddingException;
 import java.io.File;
@@ -19,7 +18,6 @@ import java.net.MalformedURLException;
 import java.security.InvalidKeyException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.Security;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.Arrays;
@@ -47,7 +45,6 @@ public class App {
 
     public static void main(String[] args) {
         LOG.info("KGS-Keystore crypto tool.....");
-        Security.addProvider(new BouncyCastleProvider());
         final List<String> parameters = Collections.unmodifiableList(Arrays.asList(args));
         try {
             parameterValidatorService.validateParameters(parameters);

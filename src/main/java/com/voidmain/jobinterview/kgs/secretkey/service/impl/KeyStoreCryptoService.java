@@ -22,7 +22,7 @@ import java.security.cert.CertificateException;
 public class KeyStoreCryptoService implements ICryptoService {
 
     public static final String KEY_ALIAS = "keytool";
-    public static final String CRYPTO_ALGORITHM = "RSA/CBC/PKCS5Padding";
+    public static final String CRYPTO_ALGORITHM = "AES/CBC/PKCS5Padding";
 
     @Override
     public void decrypt(@Nonnull String password, @Nonnull IDataRepository keyStoreRepository, @Nonnull IDataRepository inputDataRepository, @Nonnull IDataRepository outputDataRepository) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException, NoSuchPaddingException, InvalidKeyException {
