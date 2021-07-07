@@ -10,10 +10,18 @@ import com.voidmain.jobinterview.kgs.secretkey.service.IParameterValidatorServic
 import com.voidmain.jobinterview.kgs.secretkey.service.impl.CommandLineParameterValidatorService;
 import com.voidmain.jobinterview.kgs.secretkey.service.impl.KeyStoreCryptoService;
 import org.apache.log4j.Logger;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
+import javax.crypto.NoSuchPaddingException;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.security.InvalidKeyException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.Security;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -39,6 +47,7 @@ public class App {
 
     public static void main(String[] args) {
         LOG.info("KGS-Keystore crypto tool.....");
+        Security.addProvider(new BouncyCastleProvider());
         final List<String> parameters = Collections.unmodifiableList(Arrays.asList(args));
         try {
             parameterValidatorService.validateParameters(parameters);
@@ -64,11 +73,21 @@ public class App {
             LOG.error("OOPS: WTF did you provide as input and/or output path. Are you kidding me?");
         } catch (IOException ioException) {
             LOG.error("OOPS: input and/or output and/or keystore file cannot be read. Check if files are present and you provided the correct paths");
-        } /*catch (NoSuchAlgorithmException cryptoEx) {
-            LOG.error("OOPS: Something went wrong with crypto support. We dont have an SHA256 implementation onboard.");
-        }*/ catch (IllegalAppModeException e) {
+        } catch (IllegalAppModeException e) {
             LOG.error("OOPS: Illegal appmode: " + e.getMessage());
             LOG.info("Try \"d\" for decryption od \"e\" for encryption as first parameter");
+        } catch (UnrecoverableKeyException e) {
+            LOG.error("OOPS: key not found");
+        } catch (NoSuchPaddingException e) {
+            LOG.error("OOPS: Wrong Padding");
+        } catch (CertificateException e) {
+            LOG.error("OOPS: Something is wrong with certificates");
+        } catch (KeyStoreException e) {
+            LOG.error("OOPS: Keystore could not be opened");
+        } catch (NoSuchAlgorithmException e) {
+            LOG.error("OOPS: Crypto algorithm is not supported");
+        } catch (InvalidKeyException e) {
+            LOG.error("OOPS: Sorry Dave, i cannot let you do this!: " + e.getMessage());
         }
     }
 }

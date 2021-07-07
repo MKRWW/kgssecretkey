@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 
 /**
@@ -66,7 +68,7 @@ public class FileRepository implements IDataRepository {
     @Nonnull
     @Override
     public byte[] read() throws IOException {
-        if (null == filePath) {
+        if (null == this.filePath) {
             throw new IOException("Reading from a detached source is impossible!");
         }
         final File inputFile = new File(this.filePath);
@@ -82,5 +84,27 @@ public class FileRepository implements IDataRepository {
             throw ioException;
         }
         return inputBuffer;
+    }
+
+    @Nonnull
+    @Override
+    public OutputStream getOutPutStream() throws IOException {
+        if (null == this.filePath) {
+            throw new IOException("Writing to a detached source is impossible!");
+        }
+        return new FileOutputStream(new File(this.filePath));
+    }
+
+    @Nonnull
+    @Override
+    public InputStream getInputStream() throws IOException {
+        if (null == this.filePath) {
+            throw new IOException("Writing to a detached source is impossible!");
+        }
+        final File inputFile = new File(this.filePath);
+        if (isNotFileAndDoesNotExist(inputFile)) {
+            throw new IOException("Source does not exist or is a directory");
+        }
+        return new FileInputStream(inputFile);
     }
 }
