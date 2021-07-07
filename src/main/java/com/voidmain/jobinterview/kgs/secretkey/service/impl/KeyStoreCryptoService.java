@@ -8,9 +8,11 @@ import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.IvParameterSpec;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyStore;
@@ -25,17 +27,19 @@ public class KeyStoreCryptoService implements ICryptoService {
     public static final String CRYPTO_ALGORITHM = "AES/CBC/PKCS5Padding";
 
     @Override
-    public void decrypt(@Nonnull String password, @Nonnull IDataRepository keyStoreRepository, @Nonnull IDataRepository inputDataRepository, @Nonnull IDataRepository outputDataRepository) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException, NoSuchPaddingException, InvalidKeyException {
+    public void decrypt(@Nonnull String password, @Nonnull IDataRepository keyStoreRepository, @Nonnull IDataRepository inputDataRepository, @Nonnull IDataRepository outputDataRepository) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
         final KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
         keyStore.load(new ByteArrayInputStream(keyStoreRepository.read()), password.toCharArray());
         final Key secretKey = keyStore.getKey(KEY_ALIAS, password.toCharArray());
         Cipher crypto = Cipher.getInstance(CRYPTO_ALGORITHM);
-        crypto.init(Cipher.DECRYPT_MODE, secretKey);
+        crypto.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(new byte[16]));
 
         try (CipherInputStream inputStream = new CipherInputStream(inputDataRepository.getInputStream(), crypto)) {
             try (OutputStream outputStream = outputDataRepository.getOutPutStream()) {
-                while (inputStream.available() != 0) {
-                    outputStream.write(inputStream.read());
+                byte[] b = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(b)) >= 0) {
+                    outputStream.write(b, 0, bytesRead);
                 }
                 outputStream.flush();
             }
@@ -43,12 +47,12 @@ public class KeyStoreCryptoService implements ICryptoService {
     }
 
     @Override
-    public void encryptData(@Nonnull String password, @Nonnull IDataRepository keyStoreRepository, @Nonnull IDataRepository inputDataRepository, @Nonnull IDataRepository outputDataRepository) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException, NoSuchPaddingException, InvalidKeyException {
+    public void encryptData(@Nonnull String password, @Nonnull IDataRepository keyStoreRepository, @Nonnull IDataRepository inputDataRepository, @Nonnull IDataRepository outputDataRepository) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
         final KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
         keyStore.load(new ByteArrayInputStream(keyStoreRepository.read()), password.toCharArray());
         final Key secretKey = keyStore.getKey(KEY_ALIAS, password.toCharArray());
         Cipher crypto = Cipher.getInstance(CRYPTO_ALGORITHM);
-        crypto.init(Cipher.ENCRYPT_MODE, secretKey);
+        crypto.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(new byte[16]));
 
         try (CipherOutputStream outputStream = new CipherOutputStream(outputDataRepository.getOutPutStream(), crypto)) {
             final byte[] sourceData = inputDataRepository.read();

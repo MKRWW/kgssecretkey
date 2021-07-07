@@ -15,6 +15,7 @@ import javax.crypto.NoSuchPaddingException;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -83,7 +84,7 @@ public class App {
             LOG.error("OOPS: Keystore could not be opened");
         } catch (NoSuchAlgorithmException e) {
             LOG.error("OOPS: Crypto algorithm is not supported");
-        } catch (InvalidKeyException e) {
+        } catch (InvalidKeyException | InvalidAlgorithmParameterException e) {
             LOG.error("OOPS: Sorry Dave, i cannot let you do this!: " + e.getMessage());
         }
     }
