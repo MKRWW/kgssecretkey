@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class CommandLineParameterValidatorService implements IParameterValidatorService {
 
-    public static final int MINIMUM_PARAMETERS_COUNT = 4;
+    public static final int MINIMUM_PARAMETERS_COUNT = 5;
 
     /**
      * Validates parameters coming in from the commandline
@@ -24,7 +24,7 @@ public class CommandLineParameterValidatorService implements IParameterValidator
     @Override
     public void validateParameters(@Nonnull List<String> parameters) throws ParameterValidationException {
         if (MINIMUM_PARAMETERS_COUNT != parameters.size()) {
-            throw new ParameterValidationException("You should provide password, keystore filepath, input file, output file as parameter.");
+            throw new ParameterValidationException("You should provide \"e||d, password, keystore filepath, input file, output file\" as parameter.");
         }
     }
 
